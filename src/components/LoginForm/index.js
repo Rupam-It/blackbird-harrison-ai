@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -8,30 +8,40 @@ import Grid from '@mui/material/Grid';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import logo from '../../assets/logo.svg';
-
+import emailValidator from 'email-validator'; // Import the email-validator library
 
 export default function LoginForm() {
   const [showAlert, setShowAlert] = useState(false);
+
   const validateForm = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get('email');
     const password = data.get('password');
 
-    // Add validation code here
+    // Email validation using email-validator library
+    const validEmail = emailValidator.validate(email);
 
+    // Password validation
+    const validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
+
+    return validEmail && validPassword;
   }
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    validateForm(event);
-    setShowAlert("Login Successful");
-  };
+    const email = data.get('email'); // Get email from form data
+    const password = data.get('password'); // Get password from form data
+
+    const isFormValid = validateForm(event); // Check if form is valid
+
+    if (isFormValid) {
+      setShowAlert(`Login successful for email: ${email}`);
+    } else {
+      setShowAlert('Invalid email or password.\nMinimum of 8 characters Should contains both uppercase and lowercase letter\n Minimum of 1 numerical digit (0-9)\n Minimum of 1 special character (!@#$%^&*, etc) Please try again.');
+    }
+  }
 
   return (
     <>
